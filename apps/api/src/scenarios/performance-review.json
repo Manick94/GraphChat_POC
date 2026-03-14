@@ -1,0 +1,17 @@
+{
+  "id": "performance-review",
+  "name": "Performance Review Coaching",
+  "description": "Handle difficult review conversations.",
+  "version": "1.0.0",
+  "entryNode": "start",
+  "nodes": {
+    "start": { "id": "start", "type": "bot", "content": "Thanks for meeting. Ready to review your goals?" },
+    "goals": { "id": "goals", "type": "bot", "content": "Which goal do you want to focus on first?" },
+    "end": { "id": "end", "type": "end", "content": "Great planning session today." }
+  },
+  "edges": [
+    { "id": "p1", "from": "start", "to": "goals", "trigger": { "type": "exact", "value": "yes" } },
+    { "id": "p2", "from": "goals", "to": "end", "trigger": { "type": "regex", "value": "(communication|delivery|leadership)" } }
+  ],
+  "variables": []
+}

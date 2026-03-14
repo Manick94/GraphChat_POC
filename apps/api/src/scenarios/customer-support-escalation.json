@@ -1,0 +1,17 @@
+{
+  "id": "customer-support-escalation",
+  "name": "Customer Support Escalation",
+  "description": "De-escalate an upset customer while preserving trust.",
+  "version": "1.0.0",
+  "entryNode": "open",
+  "nodes": {
+    "open": { "id": "open", "type": "bot", "content": "I can hear your frustration. Can you share what happened?" },
+    "apology": { "id": "apology", "type": "bot", "content": "Thank you. I am sorry this happened, and I can help resolve it." },
+    "resolve": { "id": "resolve", "type": "end", "content": "Issue documented and escalation initiated." }
+  },
+  "edges": [
+    { "id": "c1", "from": "open", "to": "apology", "trigger": { "type": "intent", "value": ["angry", "frustrated", "bad experience"] } },
+    { "id": "c2", "from": "apology", "to": "resolve", "trigger": { "type": "button", "value": "thanks" } }
+  ],
+  "variables": []
+}
