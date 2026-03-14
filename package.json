@@ -1,0 +1,19 @@
+{
+  "name": "conversation-trainer",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace @conversation-trainer/api\" \"npm run dev --workspace @conversation-trainer/web\"",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspace @conversation-trainer/api",
+    "lint": "npm run lint --workspaces"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.6.3"
+  }
+}

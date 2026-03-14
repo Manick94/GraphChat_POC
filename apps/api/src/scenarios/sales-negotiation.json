@@ -1,0 +1,27 @@
+{
+  "id": "sales-negotiation",
+  "name": "Enterprise Software Negotiation",
+  "description": "Practice budget and objection handling.",
+  "version": "1.0.0",
+  "entryNode": "greeting",
+  "nodes": {
+    "greeting": { "id": "greeting", "type": "bot", "content": "Hi! Are you evaluating options for 100 employees?" },
+    "budget": { "id": "budget", "type": "bot", "content": "What is your budget for this quarter?" },
+    "objection": { "id": "objection", "type": "bot", "content": "I understand price concerns. We can explore a discount." },
+    "won": { "id": "won", "type": "end", "content": "Great, I will send over the contract." }
+  },
+  "edges": [
+    { "id": "e1", "from": "greeting", "to": "budget", "trigger": { "type": "exact", "value": ["yes", "confirm"] } },
+    {
+      "id": "e2",
+      "from": "budget",
+      "to": "objection",
+      "trigger": { "type": "intent", "value": ["too expensive", "need discount", "lower price"] },
+      "actions": [{ "type": "setVariable", "target": "objection_raised", "value": true }]
+    },
+    { "id": "e3", "from": "objection", "to": "won", "trigger": { "type": "button", "value": "accept" } }
+  ],
+  "variables": [
+    { "name": "objection_raised", "type": "boolean", "default": false }
+  ]
+}
