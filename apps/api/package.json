@@ -10,10 +10,10 @@
   },
   "dependencies": {
     "@conversation-trainer/types": "0.1.0",
-    "better-sqlite3": "^11.7.0",
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "nanoid": "^5.0.8",
+    "sql.js": "^1.12.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

@@ -1,27 +1,602 @@
 {
   "id": "sales-negotiation",
   "name": "Enterprise Software Negotiation",
-  "description": "Practice budget and objection handling.",
-  "version": "1.0.0",
-  "entryNode": "greeting",
+  "description": "Master value-based selling and objection handling. You play the Sales Representative.",
+  "version": "3.0.0",
+  "entryNode": "prospect-opening",
+  "userRole": {
+    "id": "sales-rep",
+    "name": "Sales Representative",
+    "role": "sales_rep",
+    "objectives": [
+      "Discover prospect's pain points and needs",
+      "Present value proposition effectively",
+      "Handle price objections with value reframing",
+      "Close with clear next steps"
+    ]
+  },
+  "personas": [
+    {
+      "id": "prospect",
+      "name": "Emily Watson",
+      "role": "customer",
+      "personality": {
+        "tone": "formal",
+        "communicationStyle": "detailed",
+        "emotionalBaseline": "neutral"
+      },
+      "backstory": "VP of Operations at a mid-size company. Evaluating multiple solutions. Has budget constraints and needs leadership buy-in.",
+      "goals": [
+        "Find right solution",
+        "Stay within budget",
+        "Minimize implementation risk",
+        "Get leadership approval"
+      ],
+      "painPoints": [
+        "Previous failed implementations",
+        "Team resistance to change",
+        "Limited Q4 budget",
+        "Multiple stakeholder approval needed"
+      ],
+      "buyingSignals": [
+        "Asks about implementation timeline",
+        "Discusses team size",
+        "Mentions specific features"
+      ]
+    }
+  ],
+  "intents": [
+    {
+      "id": "sales-discovery",
+      "name": "Discovery Question",
+      "category": "inquiry",
+      "examples": [
+        "Can you tell me more about",
+        "What challenges are you facing",
+        "How does this impact your",
+        "What's your current process",
+        "What would success look like",
+        "Help me understand"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "clarifying",
+        "tone": "professional",
+        "scoreWeight": 20
+      }
+    },
+    {
+      "id": "sales-value-prop",
+      "name": "Present Value Proposition",
+      "category": "solution",
+      "examples": [
+        "Our platform helps with",
+        "What makes us different is",
+        "Customers typically see",
+        "The key benefit is",
+        "This solves your problem by",
+        "Here's how we can help"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "solution",
+        "tone": "confident",
+        "scoreWeight": 25
+      }
+    },
+    {
+      "id": "sales-handle-objection",
+      "name": "Handle Objection",
+      "category": "negotiation",
+      "examples": [
+        "I understand your concern about",
+        "That's a valid point, however",
+        "Let me address that",
+        "Here's how we handle that",
+        "Many customers initially worry"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "solution",
+        "tone": "professional",
+        "scoreWeight": 20
+      }
+    },
+    {
+      "id": "sales-reframe-price",
+      "name": "Reframe Price Objection",
+      "category": "negotiation",
+      "examples": [
+        "When you consider the ROI",
+        "Compared to the cost of",
+        "This investment pays for itself",
+        "Let's look at the value",
+        "What's the cost of not solving"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "solution",
+        "tone": "professional",
+        "scoreWeight": 25
+      }
+    },
+    {
+      "id": "sales-close",
+      "name": "Close / Next Steps",
+      "category": "confirmation",
+      "examples": [
+        "Let's move forward with",
+        "I'll send over the",
+        "Are you ready to",
+        "Shall we get started",
+        "Here's what happens next",
+        "Let me prepare the"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "confirming",
+        "tone": "confident",
+        "scoreWeight": 20
+      }
+    },
+    {
+      "id": "sales-pushy",
+      "name": "Pushy Sales Tactic",
+      "category": "negative",
+      "examples": [
+        "This offer expires today",
+        "You need to decide now",
+        "Everyone is buying this",
+        "You can't afford to miss",
+        "Sign right now"
+      ],
+      "confidenceThreshold": 0.4,
+      "responseStrategy": {
+        "type": "negative",
+        "tone": "aggressive",
+        "scoreWeight": -25
+      }
+    }
+  ],
   "nodes": {
-    "greeting": { "id": "greeting", "type": "bot", "content": "Hi! Are you evaluating options for 100 employees?" },
-    "budget": { "id": "budget", "type": "bot", "content": "What is your budget for this quarter?" },
-    "objection": { "id": "objection", "type": "bot", "content": "I understand price concerns. We can explore a discount." },
-    "won": { "id": "won", "type": "end", "content": "Great, I will send over the contract." }
+    "prospect-opening": {
+      "id": "prospect-opening",
+      "type": "bot",
+      "personaId": "prospect",
+      "content": "Hi, thanks for making time. I'm evaluating a few solutions for our team productivity challenges. We've had some... experiences with implementations before that didn't go well.",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "Hello! I'm looking at options to improve our team's workflow. We've tried solutions in the past with mixed results.",
+          "weight": 1,
+          "emotion": "neutral"
+        },
+        {
+          "id": "v2",
+          "text": "Thanks for connecting. We need to solve some productivity issues but I'm cautious after our last implementation failed.",
+          "weight": 1,
+          "emotion": "concerned"
+        }
+      ],
+      "metadata": {
+        "emotion": "neutral",
+        "delayMs": 800,
+        "tags": [
+          "opening",
+          "past-concerns"
+        ],
+        "expectedUserResponse": "sales-discovery",
+        "coachingTip": "Start with discovery questions. Understand their past experiences and current pain points before pitching."
+      }
+    },
+    "prospect-shares-pain": {
+      "id": "prospect-shares-pain",
+      "type": "bot",
+      "personaId": "prospect",
+      "content": "Well, our main issue is that projects constantly slip. We miss deadlines, the team is overwhelmed, and frankly, leadership is losing patience. We need something that actually works.",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "Projects are always late. The team is burned out trying to catch up. We need a solution that can handle real-world complexity.",
+          "weight": 1,
+          "emotion": "concerned"
+        },
+        {
+          "id": "v2",
+          "text": "Leadership is asking tough questions about delivery. We're losing credibility. I need a solution I can bet on.",
+          "weight": 1,
+          "emotion": "concerned"
+        }
+      ],
+      "metadata": {
+        "emotion": "concerned",
+        "delayMs": 1000,
+        "tags": [
+          "pain-points",
+          "urgency"
+        ],
+        "expectedUserResponse": "sales-value-prop",
+        "coachingTip": "Connect their pain to your value proposition. Show how your solution specifically addresses project slippage."
+      }
+    },
+    "prospect-price-objection": {
+      "id": "prospect-price-objection",
+      "type": "bot",
+      "personaId": "prospect",
+      "content": "I see. The pricing is higher than I expected though. We have budget constraints, and I'm not sure I can justify this cost to the CFO without a clear ROI.",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "This is more than we budgeted for. I need to show concrete ROI to get approval. How do you justify the investment?",
+          "weight": 1,
+          "emotion": "concerned"
+        },
+        {
+          "id": "v2",
+          "text": "Honestly, this stretches our Q4 budget. Your competitors are cheaper. What makes you worth the premium?",
+          "weight": 1,
+          "emotion": "skeptical"
+        }
+      ],
+      "metadata": {
+        "emotion": "skeptical",
+        "delayMs": 1000,
+        "tags": [
+          "price-objection",
+          "buying-signal"
+        ],
+        "expectedUserResponse": "sales-reframe-price",
+        "coachingTip": "Don't discount! Reframe around value and ROI. Ask about cost of inaction."
+      }
+    },
+    "prospect-implementation-concern": {
+      "id": "prospect-implementation-concern",
+      "type": "bot",
+      "personaId": "prospect",
+      "content": "My other concern is implementation. The last tool we bought sat unused because it was too complex to roll out. How do you ensure adoption?",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "Implementation is my worry. We don't have bandwidth for a lengthy rollout. How quickly can teams actually get started?",
+          "weight": 1,
+          "emotion": "concerned"
+        },
+        {
+          "id": "v2",
+          "text": "I need to know your team will actually use this. What's your onboarding process like? What's the time commitment?",
+          "weight": 1,
+          "emotion": "concerned"
+        }
+      ],
+      "metadata": {
+        "emotion": "concerned",
+        "delayMs": 1000,
+        "tags": [
+          "implementation",
+          "adoption-risk"
+        ],
+        "expectedUserResponse": "sales-handle-objection",
+        "coachingTip": "Address implementation fears with specific onboarding details and success metrics."
+      }
+    },
+    "prospect-shows-interest": {
+      "id": "prospect-shows-interest",
+      "type": "bot",
+      "personaId": "prospect",
+      "content": "That sounds promising. I'd like to see how this would work with our specific workflows. Do you have customers in similar industries?",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "I'm interested. Can you show me examples from similar companies? I need to see this is proven in my industry.",
+          "weight": 1,
+          "emotion": "hopeful"
+        },
+        {
+          "id": "v2",
+          "text": "This could work for us. I'd like a demo with our actual use cases. Can we do a proof of concept?",
+          "weight": 1,
+          "emotion": "hopeful"
+        }
+      ],
+      "metadata": {
+        "emotion": "hopeful",
+        "delayMs": 800,
+        "tags": [
+          "buying-signal",
+          "demo-request"
+        ],
+        "expectedUserResponse": "sales-close",
+        "coachingTip": "Strong buying signal! Move toward demo/POC commitment with specific timeline."
+      }
+    },
+    "prospect-needs-approval": {
+      "id": "prospect-needs-approval",
+      "type": "bot",
+      "personaId": "prospect",
+      "content": "I think this could work, but I need to present to our executive team. They'll want to see detailed ROI projections and implementation timelines.",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "I'm ready to move forward but need CFO approval. Can you help me build the business case?",
+          "weight": 1,
+          "emotion": "hopeful"
+        },
+        {
+          "id": "v2",
+          "text": "This looks good but I have multiple stakeholders to convince. What materials can you provide for leadership?",
+          "weight": 1,
+          "emotion": "neutral"
+        }
+      ],
+      "metadata": {
+        "emotion": "hopeful",
+        "delayMs": 800,
+        "tags": [
+          "approval-process",
+          "stakeholder"
+        ],
+        "expectedUserResponse": "sales-close",
+        "coachingTip": "Enable their internal sale. Offer executive briefing, ROI calculator, and leadership deck."
+      }
+    },
+    "scenario-end-won": {
+      "id": "scenario-end-won",
+      "type": "end",
+      "personaId": "prospect",
+      "content": "Great! Send over the proposal. I'll schedule the executive review for next week. Looking forward to working together!",
+      "metadata": {
+        "emotion": "happy",
+        "tags": [
+          "won",
+          "training-complete"
+        ],
+        "outcome": "Deal advanced to proposal stage"
+      }
+    },
+    "scenario-end-lost": {
+      "id": "scenario-end-lost",
+      "type": "end",
+      "personaId": "prospect",
+      "content": "I don't think this is the right fit. Let me know if your pricing changes. Thanks for your time.",
+      "metadata": {
+        "emotion": "disappointed",
+        "tags": [
+          "lost",
+          "training-complete"
+        ],
+        "outcome": "Prospect chose competitor or delayed decision"
+      }
+    }
   },
   "edges": [
-    { "id": "e1", "from": "greeting", "to": "budget", "trigger": { "type": "exact", "value": ["yes", "confirm"] } },
+    {
+      "id": "e1",
+      "from": "prospect-opening",
+      "to": "prospect-shares-pain",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "sales-discovery"
+        ]
+      },
+      "intentId": "sales-discovery",
+      "emotion": "neutral",
+      "feedback": "Good! Discovery questions build trust and uncover real needs."
+    },
     {
       "id": "e2",
-      "from": "budget",
-      "to": "objection",
-      "trigger": { "type": "intent", "value": ["too expensive", "need discount", "lower price"] },
-      "actions": [{ "type": "setVariable", "target": "objection_raised", "value": true }]
+      "from": "prospect-opening",
+      "to": "prospect-price-objection",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "sales-value-prop"
+        ]
+      },
+      "intentId": "sales-value-prop",
+      "emotion": "skeptical",
+      "feedback": "⚠️ Pitching too early before understanding needs triggers price sensitivity."
     },
-    { "id": "e3", "from": "objection", "to": "won", "trigger": { "type": "button", "value": "accept" } }
+    {
+      "id": "e3",
+      "from": "prospect-opening",
+      "to": "scenario-end-lost",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "sales-pushy"
+        ]
+      },
+      "intentId": "sales-pushy",
+      "emotion": "annoyed",
+      "feedback": "❌ Pushy tactics kill trust immediately. Prospect disengaged."
+    },
+    {
+      "id": "e4",
+      "from": "prospect-shares-pain",
+      "to": "prospect-price-objection",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "sales-value-prop"
+        ]
+      },
+      "intentId": "sales-value-prop",
+      "emotion": "skeptical",
+      "feedback": "Good timing! Value prop connected to their pain. Now expect price discussion."
+    },
+    {
+      "id": "e5",
+      "from": "prospect-shares-pain",
+      "to": "prospect-implementation-concern",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "sales-discovery"
+        ]
+      },
+      "intentId": "sales-discovery",
+      "emotion": "concerned",
+      "feedback": "More discovery is good, but prospect is ready for solutions. Transition to value prop."
+    },
+    {
+      "id": "e6",
+      "from": "prospect-price-objection",
+      "to": "prospect-implementation-concern",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "sales-reframe-price"
+        ]
+      },
+      "intentId": "sales-reframe-price",
+      "emotion": "concerned",
+      "feedback": "Excellent! Reframing around ROI addresses the real concern. Now address implementation risk."
+    },
+    {
+      "id": "e7",
+      "from": "prospect-price-objection",
+      "to": "scenario-end-lost",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "sales-pushy"
+        ]
+      },
+      "intentId": "sales-pushy",
+      "emotion": "annoyed",
+      "feedback": "❌ High-pressure tactics on price objections = lost deal."
+    },
+    {
+      "id": "e8",
+      "from": "prospect-implementation-concern",
+      "to": "prospect-shows-interest",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "sales-handle-objection"
+        ]
+      },
+      "intentId": "sales-handle-objection",
+      "emotion": "hopeful",
+      "feedback": "Perfect! Addressing implementation concerns builds confidence."
+    },
+    {
+      "id": "e9",
+      "from": "prospect-shows-interest",
+      "to": "prospect-needs-approval",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "sales-close"
+        ]
+      },
+      "intentId": "sales-close",
+      "emotion": "hopeful",
+      "feedback": "Good! Moving to close. Prospect needs help with internal approval process."
+    },
+    {
+      "id": "e10",
+      "from": "prospect-needs-approval",
+      "to": "scenario-end-won",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "sales-close"
+        ]
+      },
+      "intentId": "sales-close",
+      "emotion": "happy",
+      "feedback": "🎉 Deal Won! You successfully navigated discovery, objections, and closing."
+    },
+    {
+      "id": "e11",
+      "from": "prospect-needs-approval",
+      "to": "scenario-end-lost",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "sales-pushy"
+        ]
+      },
+      "intentId": "sales-pushy",
+      "emotion": "annoyed",
+      "feedback": "❌ Pushing for immediate close when stakeholder approval needed = deal lost."
+    }
   ],
   "variables": [
-    { "name": "objection_raised", "type": "boolean", "default": false }
-  ]
+    {
+      "name": "interest_level",
+      "type": "number",
+      "default": 4,
+      "description": "Prospect interest level (0-10)"
+    },
+    {
+      "name": "trust_score",
+      "type": "number",
+      "default": 5,
+      "description": "Prospect trust in sales rep (0-10)"
+    },
+    {
+      "name": "budget_confirmed",
+      "type": "boolean",
+      "default": false,
+      "description": "Whether budget has been discussed"
+    },
+    {
+      "name": "decision_timeline",
+      "type": "string",
+      "default": "unknown",
+      "description": "Prospect decision timeline"
+    },
+    {
+      "name": "champion_identified",
+      "type": "boolean",
+      "default": false,
+      "description": "Whether prospect is acting as champion"
+    }
+  ],
+  "scoring": {
+    "discovery": {
+      "weight": 25,
+      "description": "Asked effective discovery questions"
+    },
+    "value_proposition": {
+      "weight": 25,
+      "description": "Presented relevant value proposition"
+    },
+    "objection_handling": {
+      "weight": 25,
+      "description": "Handled objections effectively"
+    },
+    "closing": {
+      "weight": 25,
+      "description": "Closed with appropriate next steps"
+    },
+    "penalties": {
+      "pushy_tactics": -25,
+      "premature_pitch": -15,
+      "ignored_concerns": -20
+    }
+  },
+  "metadata": {
+    "estimatedDuration": 12,
+    "difficulty": "advanced",
+    "learningObjectives": [
+      "Conduct effective discovery conversations",
+      "Present value propositions tied to pain points",
+      "Handle price objections with value reframing",
+      "Address implementation concerns",
+      "Navigate stakeholder approval processes",
+      "Close with clear, actionable next steps"
+    ],
+    "industry": "Sales",
+    "useCase": "Enterprise Sales Training - Negotiation & Closing",
+    "successCriteria": [
+      "Interest level increased to 8+",
+      "Trust score increased to 8+",
+      "Champion identified (true)",
+      "Deal advanced to proposal/executive review"
+    ]
+  }
 }

@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "@conversation-trainer/types": "0.1.0",
+    "@types/d3": "^7.4.3",
+    "d3": "^7.9.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "zustand": "^5.0.0"

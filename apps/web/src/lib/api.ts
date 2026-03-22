@@ -1,11 +1,25 @@
-import { ConversationNode, ConversationContext } from '@conversation-trainer/types';
+import {
+  ConversationNode,
+  ConversationContext,
+  TraversalResult,
+} from "@conversation-trainer/types";
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 export interface StartResponse {
   conversationId: string;
   currentNode: ConversationNode;
   context: ConversationContext;
+  userRole?: {
+    id: string;
+    name: string;
+    role: string;
+    objectives: string[];
+  };
+}
+
+export interface MessageResponse extends TraversalResult {
+  messages?: ConversationNode[];
 }
 
 export async function fetchScenarios() {
@@ -13,21 +27,29 @@ export async function fetchScenarios() {
   return response.json();
 }
 
-export async function startConversation(scenarioId: string): Promise<StartResponse> {
+export async function startConversation(
+  scenarioId: string,
+): Promise<StartResponse> {
   const response = await fetch(`${API_URL}/api/conversations`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ scenarioId })
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ scenarioId }),
   });
   return response.json();
 }
 
-export async function sendConversationMessage(conversationId: string, message: string) {
-  const response = await fetch(`${API_URL}/api/conversations/${conversationId}/message`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message })
-  });
+export async function sendConversationMessage(
+  conversationId: string,
+  message: string,
+): Promise<MessageResponse> {
+  const response = await fetch(
+    `${API_URL}/api/conversations/${conversationId}/message`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    },
+  );
   return response.json();
 }
 

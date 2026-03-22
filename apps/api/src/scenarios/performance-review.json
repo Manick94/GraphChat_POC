@@ -1,17 +1,572 @@
 {
   "id": "performance-review",
   "name": "Performance Review Coaching",
-  "description": "Handle difficult review conversations.",
-  "version": "1.0.0",
-  "entryNode": "start",
+  "description": "Navigate difficult performance conversations with empathy and clarity. You play the Manager.",
+  "version": "3.0.0",
+  "entryNode": "employee-opening",
+  "userRole": {
+    "id": "manager",
+    "name": "People Manager",
+    "role": "manager",
+    "objectives": [
+      "Deliver honest feedback with empathy",
+      "Handle defensiveness constructively",
+      "Co-create actionable improvement plans",
+      "Set clear expectations while maintaining relationship"
+    ]
+  },
+  "personas": [
+    {
+      "id": "employee",
+      "name": "Michael Park",
+      "role": "employee",
+      "personality": {
+        "tone": "casual",
+        "communicationStyle": "direct",
+        "emotionalBaseline": "uncertain"
+      },
+      "backstory": "Talented employee who has been struggling with recent project deadlines. Feels overwhelmed and possibly micromanaged.",
+      "goals": [
+        "Understand expectations",
+        "Show commitment to improvement",
+        "Maintain credibility",
+        "Get support not criticism"
+      ],
+      "painPoints": [
+        "Feeling micromanaged",
+        "Work-life balance concerns",
+        "Unclear priorities",
+        "Lack of recognition"
+      ],
+      "defensivenessTriggers": [
+        "Blame language",
+        "Comparison to others",
+        "Vague criticism",
+        "No support offered"
+      ]
+    }
+  ],
+  "intents": [
+    {
+      "id": "manager-empathy",
+      "name": "Show Empathy",
+      "category": "empathetic",
+      "examples": [
+        "I understand this is challenging",
+        "I can see you're working hard",
+        "I appreciate your perspective",
+        "That sounds difficult",
+        "I hear what you're saying"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "empathetic",
+        "tone": "warm",
+        "scoreWeight": 20
+      }
+    },
+    {
+      "id": "manager-specific-feedback",
+      "name": "Give Specific Feedback",
+      "category": "solution",
+      "examples": [
+        "I've noticed that",
+        "Specifically, I observed",
+        "On the recent project",
+        "The pattern I'm seeing is",
+        "Here's what I've observed"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "solution",
+        "tone": "professional",
+        "scoreWeight": 25
+      }
+    },
+    {
+      "id": "manager-ask-discovery",
+      "name": "Ask Discovery Questions",
+      "category": "inquiry",
+      "examples": [
+        "Help me understand",
+        "What's been challenging",
+        "How are you feeling about",
+        "What support do you need",
+        "What's getting in the way"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "clarifying",
+        "tone": "warm",
+        "scoreWeight": 20
+      }
+    },
+    {
+      "id": "manager-collaborate",
+      "name": "Collaborate on Solution",
+      "category": "solution",
+      "examples": [
+        "Let's figure this out together",
+        "What if we try",
+        "Here's what I'm thinking",
+        "Let's create a plan",
+        "How about we"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "solution",
+        "tone": "collaborative",
+        "scoreWeight": 25
+      }
+    },
+    {
+      "id": "manager-set-expectations",
+      "name": "Set Clear Expectations",
+      "category": "confirming",
+      "examples": [
+        "Here's what I need to see",
+        "Let me be clear about",
+        "The expectations are",
+        "Success looks like",
+        "I need you to"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "confirming",
+        "tone": "assertive",
+        "scoreWeight": 20
+      }
+    },
+    {
+      "id": "manager-blaming",
+      "name": "Blaming Language",
+      "category": "negative",
+      "examples": [
+        "You keep failing",
+        "You're not meeting",
+        "You always",
+        "You never",
+        "The problem is you"
+      ],
+      "confidenceThreshold": 0.4,
+      "responseStrategy": {
+        "type": "negative",
+        "tone": "accusatory",
+        "scoreWeight": -25
+      }
+    }
+  ],
   "nodes": {
-    "start": { "id": "start", "type": "bot", "content": "Thanks for meeting. Ready to review your goals?" },
-    "goals": { "id": "goals", "type": "bot", "content": "Which goal do you want to focus on first?" },
-    "end": { "id": "end", "type": "end", "content": "Great planning session today." }
+    "employee-opening": {
+      "id": "employee-opening",
+      "type": "bot",
+      "personaId": "employee",
+      "content": "Hey, thanks for setting up this meeting. I have to admit, when you said you wanted to talk about my performance, I got a bit nervous. What's on your mind?",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "Hi! I'll be honest, I'm a little worried about this conversation. What did you want to discuss?",
+          "weight": 1,
+          "emotion": "uncertain"
+        },
+        {
+          "id": "v2",
+          "text": "Thanks for meeting. I'm guessing this is about the recent project delays? I know things haven't been perfect.",
+          "weight": 1,
+          "emotion": "concerned"
+        }
+      ],
+      "metadata": {
+        "emotion": "uncertain",
+        "delayMs": 800,
+        "tags": [
+          "opening",
+          "vulnerability"
+        ],
+        "expectedUserResponse": "manager-empathy or manager-ask-discovery",
+        "coachingTip": "Start with empathy to reduce anxiety. Ask open-ended questions to understand their perspective."
+      }
+    },
+    "employee-shares-challenges": {
+      "id": "employee-shares-challenges",
+      "type": "bot",
+      "personaId": "employee",
+      "content": "Honestly, I've been struggling. There's so much context switching, and I feel like I'm constantly being pulled in different directions. Some days I wonder if I'm cut out for this role.",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "It's been tough. The workload feels unmanageable sometimes. I'm doing my best but it doesn't feel like enough.",
+          "weight": 1,
+          "emotion": "concerned"
+        },
+        {
+          "id": "v2",
+          "text": "I'm feeling overwhelmed. There are competing priorities and I'm not sure I'm meeting expectations. I want to do better.",
+          "weight": 1,
+          "emotion": "uncertain"
+        }
+      ],
+      "metadata": {
+        "emotion": "concerned",
+        "delayMs": 1000,
+        "tags": [
+          "vulnerability",
+          "self-doubt"
+        ],
+        "expectedUserResponse": "manager-empathy or manager-ask-discovery",
+        "coachingTip": "Employee is being vulnerable. Validate their feelings before problem-solving."
+      }
+    },
+    "employee-shows-defensiveness": {
+      "id": "employee-shows-defensiveness",
+      "type": "bot",
+      "personaId": "employee",
+      "content": "I mean, I get the feedback, but it feels like no matter what I do, it's not enough. Sometimes I feel like I'm being micromanaged and that makes it harder to focus.",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "I hear the feedback, but honestly, the constant check-ins make it hard to get into flow state. I need some autonomy here.",
+          "weight": 1,
+          "emotion": "frustrated"
+        },
+        {
+          "id": "v2",
+          "text": "It feels like I'm being set up to fail. The expectations keep shifting and I can't catch a break.",
+          "weight": 1,
+          "emotion": "frustrated"
+        }
+      ],
+      "metadata": {
+        "emotion": "frustrated",
+        "delayMs": 1000,
+        "tags": [
+          "defensiveness",
+          "micromanagement-concern"
+        ],
+        "expectedUserResponse": "manager-empathy",
+        "coachingTip": "Defensiveness means they feel threatened. De-escalate with empathy before addressing the behavior."
+      }
+    },
+    "employee-asks-for-support": {
+      "id": "employee-asks-for-support",
+      "type": "bot",
+      "personaId": "employee",
+      "content": "I do want to improve though. What would really help is clearer priorities and maybe less frequent check-ins so I can focus. Can we work on that?",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "I want to succeed here. If we could clarify priorities and reduce the meeting load, I think I could deliver much better.",
+          "weight": 1,
+          "emotion": "hopeful"
+        },
+        {
+          "id": "v2",
+          "text": "Can we figure out a system that works better? I need clearer direction and some space to execute.",
+          "weight": 1,
+          "emotion": "hopeful"
+        }
+      ],
+      "metadata": {
+        "emotion": "hopeful",
+        "delayMs": 800,
+        "tags": [
+          "solution-seeking",
+          "commitment"
+        ],
+        "expectedUserResponse": "manager-collaborate",
+        "coachingTip": "Employee is ready to problem-solve. Collaborate on specific, actionable changes."
+      }
+    },
+    "employee-commits-to-improve": {
+      "id": "employee-commits-to-improve",
+      "type": "bot",
+      "personaId": "employee",
+      "content": "Okay, I can commit to that. If we have weekly priority reviews instead of daily check-ins, and I know what's most important, I can deliver. Let's try this for two weeks.",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "I'm on board with the plan. Let's review in two weeks and see how it's going. I'm confident I can turn this around.",
+          "weight": 1,
+          "emotion": "confident"
+        },
+        {
+          "id": "v2",
+          "text": "Thanks for working with me on this. I'll make sure you see improvement. Let's check back in a couple weeks.",
+          "weight": 1,
+          "emotion": "confident"
+        }
+      ],
+      "metadata": {
+        "emotion": "confident",
+        "delayMs": 600,
+        "tags": [
+          "commitment",
+          "action-plan"
+        ],
+        "expectedUserResponse": "manager-set-expectations",
+        "coachingTip": "Employee has committed. Set clear expectations for the trial period and success metrics."
+      }
+    },
+    "scenario-end-success": {
+      "id": "scenario-end-success",
+      "type": "end",
+      "personaId": "employee",
+      "content": "Thanks for the constructive conversation. I feel like we're on the same page now. Let's make these next two weeks count!",
+      "metadata": {
+        "emotion": "optimistic",
+        "tags": [
+          "success",
+          "training-complete"
+        ],
+        "outcome": "Employee engaged, improvement plan agreed upon"
+      }
+    },
+    "scenario-end-failure": {
+      "id": "scenario-end-failure",
+      "type": "end",
+      "personaId": "employee",
+      "content": "I hear you. I'm not sure this is going to work, but I'll do what's expected. Can we wrap up?",
+      "metadata": {
+        "emotion": "disappointed",
+        "tags": [
+          "failure",
+          "training-complete"
+        ],
+        "outcome": "Employee disengaged, relationship damaged"
+      }
+    }
   },
   "edges": [
-    { "id": "p1", "from": "start", "to": "goals", "trigger": { "type": "exact", "value": "yes" } },
-    { "id": "p2", "from": "goals", "to": "end", "trigger": { "type": "regex", "value": "(communication|delivery|leadership)" } }
+    {
+      "id": "e1",
+      "from": "employee-opening",
+      "to": "employee-shares-challenges",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "manager-empathy",
+          "manager-ask-discovery"
+        ]
+      },
+      "intentId": "manager-empathy",
+      "emotion": "uncertain",
+      "feedback": "Good! Empathy creates psychological safety. Employee is opening up."
+    },
+    {
+      "id": "e2",
+      "from": "employee-opening",
+      "to": "employee-shows-defensiveness",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "manager-specific-feedback"
+        ]
+      },
+      "intentId": "manager-specific-feedback",
+      "emotion": "frustrated",
+      "feedback": "⚠️ Jumping to feedback before empathy triggers defensiveness. Build rapport first."
+    },
+    {
+      "id": "e3",
+      "from": "employee-opening",
+      "to": "scenario-end-failure",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "manager-blaming"
+        ]
+      },
+      "intentId": "manager-blaming",
+      "emotion": "defensive",
+      "feedback": "❌ Blaming language shuts down conversation. Employee disengaged immediately."
+    },
+    {
+      "id": "e4",
+      "from": "employee-shares-challenges",
+      "to": "employee-asks-for-support",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "manager-empathy",
+          "manager-ask-discovery"
+        ]
+      },
+      "intentId": "manager-empathy",
+      "emotion": "hopeful",
+      "feedback": "Excellent! Validating their experience builds trust. Employee is now solution-ready."
+    },
+    {
+      "id": "e5",
+      "from": "employee-shares-challenges",
+      "to": "employee-shows-defensiveness",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "manager-specific-feedback"
+        ]
+      },
+      "intentId": "manager-specific-feedback",
+      "emotion": "frustrated",
+      "feedback": "⚠️ Feedback without empathy feels like criticism. Employee is now defensive."
+    },
+    {
+      "id": "e6",
+      "from": "employee-shows-defensiveness",
+      "to": "employee-asks-for-support",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "manager-empathy"
+        ]
+      },
+      "intentId": "manager-empathy",
+      "emotion": "hopeful",
+      "feedback": "Great recovery! Empathy de-escalated defensiveness. Now collaborate on solutions."
+    },
+    {
+      "id": "e7",
+      "from": "employee-shows-defensiveness",
+      "to": "scenario-end-failure",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "manager-blaming",
+          "manager-set-expectations"
+        ]
+      },
+      "intentId": "manager-blaming",
+      "emotion": "angry",
+      "feedback": "❌ Doubling down on blame when employee is defensive destroys the relationship."
+    },
+    {
+      "id": "e8",
+      "from": "employee-asks-for-support",
+      "to": "employee-commits-to-improve",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "manager-collaborate"
+        ]
+      },
+      "intentId": "manager-collaborate",
+      "emotion": "confident",
+      "feedback": "Perfect! Collaborative problem-solving leads to employee ownership and commitment."
+    },
+    {
+      "id": "e9",
+      "from": "employee-asks-for-support",
+      "to": "employee-shows-defensiveness",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "manager-set-expectations"
+        ]
+      },
+      "intentId": "manager-set-expectations",
+      "emotion": "frustrated",
+      "feedback": "⚠️ Setting expectations before collaboration feels like dictating. Employee feels unheard."
+    },
+    {
+      "id": "e10",
+      "from": "employee-commits-to-improve",
+      "to": "scenario-end-success",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "manager-set-expectations"
+        ]
+      },
+      "intentId": "manager-set-expectations",
+      "emotion": "optimistic",
+      "feedback": "🎉 Success! You set clear expectations after gaining commitment. Employee is motivated."
+    },
+    {
+      "id": "e11",
+      "from": "employee-commits-to-improve",
+      "to": "scenario-end-success",
+      "trigger": {
+        "type": "button",
+        "value": [
+          "Agree to plan",
+          "Schedule follow-up",
+          "Express confidence"
+        ]
+      },
+      "emotion": "optimistic",
+      "feedback": "🎉 Review Complete! You successfully balanced empathy with accountability."
+    }
   ],
-  "variables": []
+  "variables": [
+    {
+      "name": "trust_level",
+      "type": "number",
+      "default": 5,
+      "description": "Employee trust in manager (0-10)"
+    },
+    {
+      "name": "defensiveness_level",
+      "type": "number",
+      "default": 4,
+      "description": "Employee defensiveness (0-10)"
+    },
+    {
+      "name": "commitment_level",
+      "type": "number",
+      "default": 5,
+      "description": "Employee commitment to improve (0-10)"
+    },
+    {
+      "name": "psychological_safety",
+      "type": "string",
+      "default": "medium",
+      "description": "Level of psychological safety: low, medium, high"
+    }
+  ],
+  "scoring": {
+    "empathy": {
+      "weight": 25,
+      "description": "Showed genuine empathy and understanding"
+    },
+    "specific_feedback": {
+      "weight": 20,
+      "description": "Provided specific, observable feedback"
+    },
+    "discovery": {
+      "weight": 20,
+      "description": "Asked effective discovery questions"
+    },
+    "collaboration": {
+      "weight": 20,
+      "description": "Collaborated on solutions"
+    },
+    "expectations": {
+      "weight": 15,
+      "description": "Set clear, achievable expectations"
+    },
+    "penalties": {
+      "blaming_language": -25,
+      "premature_feedback": -15,
+      "ignoring_concerns": -20
+    }
+  },
+  "metadata": {
+    "estimatedDuration": 10,
+    "difficulty": "advanced",
+    "learningObjectives": [
+      "Create psychological safety before delivering feedback",
+      "Handle defensiveness with empathy, not escalation",
+      "Balance support with accountability",
+      "Co-create improvement plans with employee ownership",
+      "Set clear expectations after gaining commitment"
+    ],
+    "industry": "Human Resources",
+    "useCase": "Manager Training - Performance Conversations",
+    "successCriteria": [
+      "Trust level increased to 7+",
+      "Defensiveness reduced to 3 or below",
+      "Commitment level increased to 8+",
+      "Psychological safety changed to 'high'",
+      "Employee agrees to improvement plan"
+    ]
+  }
 }

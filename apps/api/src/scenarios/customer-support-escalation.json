@@ -1,17 +1,625 @@
 {
   "id": "customer-support-escalation",
   "name": "Customer Support Escalation",
-  "description": "De-escalate an upset customer while preserving trust.",
-  "version": "1.0.0",
-  "entryNode": "open",
+  "description": "Train to de-escalate upset customers while preserving trust and finding solutions. You play the Support Agent.",
+  "version": "3.0.0",
+  "entryNode": "customer-opening",
+  "userRole": {
+    "id": "support-agent",
+    "name": "Support Agent",
+    "role": "agent",
+    "objectives": [
+      "Demonstrate empathy and active listening",
+      "Identify the root cause of frustration",
+      "Propose actionable solutions",
+      "Know when to escalate appropriately"
+    ]
+  },
+  "personas": [
+    {
+      "id": "frustrated-customer",
+      "name": "Jordan Chen",
+      "role": "customer",
+      "personality": {
+        "tone": "assertive",
+        "communicationStyle": "direct",
+        "emotionalBaseline": "frustrated"
+      },
+      "backstory": "Long-time customer experiencing repeated service issues. Has contacted support 3 times already with no resolution.",
+      "goals": [
+        "Get problem resolved",
+        "Be heard and understood",
+        "Receive compensation for inconvenience"
+      ],
+      "painPoints": [
+        "Previous unresolved tickets",
+        "Time wasted",
+        "Feeling ignored"
+      ],
+      "escalationTriggers": [
+        "Being dismissed",
+        "Generic responses",
+        "No clear timeline"
+      ]
+    }
+  ],
+  "intents": [
+    {
+      "id": "agent-empathy",
+      "name": "Show Empathy",
+      "category": "empathetic",
+      "examples": [
+        "I understand your frustration",
+        "I'm sorry this happened",
+        "I can see why you're upset",
+        "That must be frustrating",
+        "I completely understand",
+        "I hear you"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "empathetic",
+        "tone": "warm",
+        "scoreWeight": 15
+      }
+    },
+    {
+      "id": "agent-apology",
+      "name": "Offer Apology",
+      "category": "apologetic",
+      "examples": [
+        "I apologize for this",
+        "I'm really sorry about this",
+        "Please accept my apologies",
+        "This shouldn't have happened, I'm sorry",
+        "I sincerely apologize"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "empathetic",
+        "tone": "apologetic",
+        "scoreWeight": 10
+      }
+    },
+    {
+      "id": "agent-investigate",
+      "name": "Investigate Issue",
+      "category": "clarifying",
+      "examples": [
+        "Let me look into this for you",
+        "I'll check what's happening",
+        "Let me review your account",
+        "I need to investigate this",
+        "Can you tell me more about"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "clarifying",
+        "tone": "professional",
+        "scoreWeight": 15
+      }
+    },
+    {
+      "id": "agent-solution",
+      "name": "Propose Solution",
+      "category": "solution",
+      "examples": [
+        "Here's what I can do",
+        "I can help you with",
+        "Let me resolve this by",
+        "The solution is",
+        "I'll fix this by",
+        "What I'll do is"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "solution",
+        "tone": "professional",
+        "scoreWeight": 25
+      }
+    },
+    {
+      "id": "agent-escalate",
+      "name": "Escalate Appropriately",
+      "category": "escalating",
+      "examples": [
+        "Let me escalate this to",
+        "I'll transfer you to",
+        "Let me get my supervisor",
+        "I need to involve our",
+        "Let me bring in our specialist"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "escalating",
+        "tone": "professional",
+        "scoreWeight": 20
+      }
+    },
+    {
+      "id": "agent-reassure",
+      "name": "Provide Reassurance",
+      "category": "confirming",
+      "examples": [
+        "I'll make sure this gets resolved",
+        "You can count on me",
+        "I'll personally follow up",
+        "I won't rest until this is fixed",
+        "I'm committed to resolving this"
+      ],
+      "confidenceThreshold": 0.5,
+      "responseStrategy": {
+        "type": "confirming",
+        "tone": "warm",
+        "scoreWeight": 15
+      }
+    },
+    {
+      "id": "agent-dismissive",
+      "name": "Dismissive Response",
+      "category": "negative",
+      "examples": [
+        "That's not our policy",
+        "There's nothing I can do",
+        "You'll have to",
+        "That's not my job",
+        "Not my department"
+      ],
+      "confidenceThreshold": 0.4,
+      "responseStrategy": {
+        "type": "negative",
+        "tone": "cold",
+        "scoreWeight": -20
+      }
+    }
+  ],
   "nodes": {
-    "open": { "id": "open", "type": "bot", "content": "I can hear your frustration. Can you share what happened?" },
-    "apology": { "id": "apology", "type": "bot", "content": "Thank you. I am sorry this happened, and I can help resolve it." },
-    "resolve": { "id": "resolve", "type": "end", "content": "Issue documented and escalation initiated." }
+    "customer-opening": {
+      "id": "customer-opening",
+      "type": "bot",
+      "personaId": "frustrated-customer",
+      "content": "Finally! I've been trying to get help for THREE DAYS. This is the fourth time I'm contacting support. My service has been down repeatedly and nobody seems to care!",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "This is ridiculous! I've called three times already and nothing is fixed. How hard is it to keep my service running?",
+          "weight": 1,
+          "emotion": "frustrated"
+        },
+        {
+          "id": "v2",
+          "text": "I'm at my wit's end here. Your service keeps failing and your support team keeps giving me the runaround. Fix this NOW!",
+          "weight": 1,
+          "emotion": "frustrated"
+        }
+      ],
+      "metadata": {
+        "emotion": "frustrated",
+        "delayMs": 500,
+        "tags": [
+          "opening",
+          "high-frustration"
+        ],
+        "expectedUserResponse": "agent-empathy or agent-apology",
+        "coachingTip": "Start with empathy and apology. Acknowledge the customer's frustration before jumping to solutions."
+      }
+    },
+    "customer-explain-issue": {
+      "id": "customer-explain-issue",
+      "type": "bot",
+      "personaId": "frustrated-customer",
+      "content": "Look, the service goes down every few hours. I lose work, I miss deadlines, and I'm paying premium prices for this? This is unacceptable for a business like mine!",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "Every time I think it's fixed, it breaks again. I'm losing money here. I need this resolved permanently, not another band-aid fix.",
+          "weight": 1,
+          "emotion": "frustrated"
+        },
+        {
+          "id": "v2",
+          "text": "I run a business here. When your service fails, I can't serve MY customers. Do you understand the impact this has?",
+          "weight": 1,
+          "emotion": "concerned"
+        }
+      ],
+      "metadata": {
+        "emotion": "frustrated",
+        "delayMs": 800,
+        "tags": [
+          "explaining",
+          "business-impact"
+        ],
+        "expectedUserResponse": "agent-investigate or agent-reassure",
+        "coachingTip": "Ask clarifying questions to understand the full scope. Show you understand the business impact."
+      }
+    },
+    "customer-asks-timeline": {
+      "id": "customer-asks-timeline",
+      "type": "bot",
+      "personaId": "frustrated-customer",
+      "content": "Okay, but how long will this actually take? I need a real answer this time, not 'we'll get back to you'.",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "I need a specific timeline. When will this be actually fixed? Hours? Days? I need to plan accordingly.",
+          "weight": 1,
+          "emotion": "concerned"
+        },
+        {
+          "id": "v2",
+          "text": "Give me a straight answer - when can I expect this to be resolved for good?",
+          "weight": 1,
+          "emotion": "assertive"
+        }
+      ],
+      "metadata": {
+        "emotion": "concerned",
+        "delayMs": 1000,
+        "tags": [
+          "timeline-request",
+          "accountability"
+        ],
+        "expectedUserResponse": "agent-solution",
+        "coachingTip": "Provide a specific, realistic timeline. Under-promise and over-deliver."
+      }
+    },
+    "customer-threatens-churn": {
+      "id": "customer-threatens-churn",
+      "type": "bot",
+      "personaId": "frustrated-customer",
+      "content": "You know what, I'm seriously considering switching to your competitor. They promised 99.9% uptime and I'm not getting that here.",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "I'm done with this. Your competitors are cheaper AND more reliable. Why should I stay?",
+          "weight": 1,
+          "emotion": "angry"
+        },
+        {
+          "id": "v2",
+          "text": "This is my final call. If this isn't resolved properly, I'm canceling my account and moving elsewhere.",
+          "weight": 1,
+          "emotion": "angry"
+        }
+      ],
+      "metadata": {
+        "emotion": "angry",
+        "delayMs": 1000,
+        "tags": [
+          "churn-threat",
+          "critical-moment"
+        ],
+        "expectedUserResponse": "agent-reassure or agent-escalate",
+        "coachingTip": "This is a critical retention moment. Reassure with specific actions and consider offering escalation or compensation."
+      }
+    },
+    "customer-calms-down": {
+      "id": "customer-calms-down",
+      "type": "bot",
+      "personaId": "frustrated-customer",
+      "content": "Alright, I appreciate you taking ownership. Just please, make sure this actually gets fixed this time.",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "Okay, thank you. I can tell you're actually listening. Let's get this resolved.",
+          "weight": 1,
+          "emotion": "hopeful"
+        },
+        {
+          "id": "v2",
+          "text": "Fine. I'll give you one more chance to fix this. Please don't make me regret it.",
+          "weight": 1,
+          "emotion": "neutral"
+        }
+      ],
+      "metadata": {
+        "emotion": "hopeful",
+        "delayMs": 800,
+        "tags": [
+          "de-escalation",
+          "trust-building"
+        ],
+        "expectedUserResponse": "agent-reassure",
+        "coachingTip": "Customer is calming down. Reinforce commitment and set clear expectations for follow-up."
+      }
+    },
+    "customer-accepts-resolution": {
+      "id": "customer-accepts-resolution",
+      "type": "bot",
+      "personaId": "frustrated-customer",
+      "content": "That sounds reasonable. I appreciate the service credit and the direct line to you. Let's see if this works.",
+      "dialogueVariations": [
+        {
+          "id": "v1",
+          "text": "Okay, I can agree to that. Thank you for actually doing something about this.",
+          "weight": 1,
+          "emotion": "grateful"
+        },
+        {
+          "id": "v2",
+          "text": "Alright, let's try your solution. I hope this finally fixes things.",
+          "weight": 1,
+          "emotion": "neutral"
+        }
+      ],
+      "metadata": {
+        "emotion": "grateful",
+        "delayMs": 600,
+        "tags": [
+          "resolution",
+          "acceptance"
+        ],
+        "expectedUserResponse": "agent-close",
+        "coachingTip": "Customer has accepted the resolution. Close professionally with clear next steps."
+      }
+    },
+    "scenario-end-success": {
+      "id": "scenario-end-success",
+      "type": "end",
+      "personaId": "frustrated-customer",
+      "content": "Thank you for your help today. I'm marking this case as resolved.",
+      "metadata": {
+        "emotion": "neutral",
+        "tags": [
+          "success",
+          "training-complete"
+        ],
+        "outcome": "Customer retained, issue escalated appropriately"
+      }
+    },
+    "scenario-end-failure": {
+      "id": "scenario-end-failure",
+      "type": "end",
+      "personaId": "frustrated-customer",
+      "content": "This conversation has ended. The customer has requested to speak to someone else.",
+      "metadata": {
+        "emotion": "disappointed",
+        "tags": [
+          "failure",
+          "training-complete"
+        ],
+        "outcome": "Customer escalated due to poor handling"
+      }
+    }
   },
   "edges": [
-    { "id": "c1", "from": "open", "to": "apology", "trigger": { "type": "intent", "value": ["angry", "frustrated", "bad experience"] } },
-    { "id": "c2", "from": "apology", "to": "resolve", "trigger": { "type": "button", "value": "thanks" } }
+    {
+      "id": "e1",
+      "from": "customer-opening",
+      "to": "customer-explain-issue",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "agent-empathy",
+          "agent-apology"
+        ]
+      },
+      "intentId": "agent-empathy",
+      "emotion": "frustrated",
+      "feedback": "Good start! You showed empathy. Now dig deeper into the issue."
+    },
+    {
+      "id": "e2",
+      "from": "customer-opening",
+      "to": "customer-threatens-churn",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "agent-dismissive"
+        ]
+      },
+      "intentId": "agent-dismissive",
+      "emotion": "angry",
+      "feedback": "⚠️ Dismissive responses escalate customer frustration. Try empathy instead."
+    },
+    {
+      "id": "e3",
+      "from": "customer-opening",
+      "to": "customer-explain-issue",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "agent-investigate"
+        ]
+      },
+      "intentId": "agent-investigate",
+      "emotion": "frustrated",
+      "feedback": "Good! You're investigating. Make sure to also acknowledge their frustration."
+    },
+    {
+      "id": "e4",
+      "from": "customer-explain-issue",
+      "to": "customer-asks-timeline",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "agent-investigate",
+          "agent-empathy"
+        ]
+      },
+      "intentId": "agent-investigate",
+      "emotion": "concerned",
+      "feedback": "Customer wants specifics now. Provide a clear timeline and solution."
+    },
+    {
+      "id": "e5",
+      "from": "customer-explain-issue",
+      "to": "customer-threatens-churn",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "agent-dismissive"
+        ]
+      },
+      "intentId": "agent-dismissive",
+      "emotion": "angry",
+      "feedback": "⚠️ Being dismissive at this stage risks losing the customer entirely."
+    },
+    {
+      "id": "e6",
+      "from": "customer-asks-timeline",
+      "to": "customer-calms-down",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "agent-solution"
+        ]
+      },
+      "intentId": "agent-solution",
+      "emotion": "hopeful",
+      "feedback": "Excellent! Clear solution with timeline. Customer is responding positively."
+    },
+    {
+      "id": "e7",
+      "from": "customer-asks-timeline",
+      "to": "customer-threatens-churn",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "agent-dismissive"
+        ]
+      },
+      "intentId": "agent-dismissive",
+      "emotion": "angry",
+      "feedback": "⚠️ Vague or dismissive responses about timeline increase churn risk."
+    },
+    {
+      "id": "e8",
+      "from": "customer-threatens-churn",
+      "to": "customer-calms-down",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "agent-reassure",
+          "agent-escalate"
+        ]
+      },
+      "intentId": "agent-reassure",
+      "emotion": "hopeful",
+      "feedback": "Great recovery! Reassurance and escalation options can save at-risk customers."
+    },
+    {
+      "id": "e9",
+      "from": "customer-threatens-churn",
+      "to": "scenario-end-failure",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "agent-dismissive"
+        ]
+      },
+      "intentId": "agent-dismissive",
+      "emotion": "angry",
+      "feedback": "❌ Customer lost! Dismissive responses to churn threats result in immediate escalation."
+    },
+    {
+      "id": "e10",
+      "from": "customer-calms-down",
+      "to": "customer-accepts-resolution",
+      "trigger": {
+        "type": "intent",
+        "value": [
+          "agent-solution",
+          "agent-reassure"
+        ]
+      },
+      "intentId": "agent-solution",
+      "emotion": "grateful",
+      "feedback": "Perfect! You've successfully de-escalated and provided a clear path forward."
+    },
+    {
+      "id": "e11",
+      "from": "customer-accepts-resolution",
+      "to": "scenario-end-success",
+      "trigger": {
+        "type": "button",
+        "value": [
+          "Close conversation",
+          "Confirm resolution",
+          "Follow up"
+        ]
+      },
+      "emotion": "grateful",
+      "feedback": "🎉 Scenario Complete! You successfully retained the customer and resolved their issue."
+    }
   ],
-  "variables": []
+  "variables": [
+    {
+      "name": "frustration_level",
+      "type": "number",
+      "default": 8,
+      "description": "Customer frustration level (0-10)"
+    },
+    {
+      "name": "trust_score",
+      "type": "number",
+      "default": 3,
+      "description": "Customer trust in agent (0-10)"
+    },
+    {
+      "name": "churn_risk",
+      "type": "string",
+      "default": "high",
+      "description": "Risk of customer leaving: low, medium, high"
+    },
+    {
+      "name": "empathy_shown",
+      "type": "boolean",
+      "default": false,
+      "description": "Whether agent showed empathy"
+    },
+    {
+      "name": "solution_offered",
+      "type": "boolean",
+      "default": false,
+      "description": "Whether agent offered concrete solution"
+    }
+  ],
+  "scoring": {
+    "empathy": {
+      "weight": 25,
+      "description": "Showed genuine empathy and understanding"
+    },
+    "apology": {
+      "weight": 15,
+      "description": "Offered sincere apology for the situation"
+    },
+    "investigation": {
+      "weight": 20,
+      "description": "Investigated the issue thoroughly"
+    },
+    "solution": {
+      "weight": 25,
+      "description": "Provided clear, actionable solution"
+    },
+    "reassurance": {
+      "weight": 15,
+      "description": "Reassured customer appropriately"
+    },
+    "penalties": {
+      "dismissive": -20,
+      "delayed_response": -10,
+      "broken_promise": -15
+    }
+  },
+  "metadata": {
+    "estimatedDuration": 8,
+    "difficulty": "intermediate",
+    "learningObjectives": [
+      "Demonstrate empathy with frustrated customers",
+      "De-escalate high-tension situations",
+      "Provide clear timelines and solutions",
+      "Recognize when to escalate",
+      "Retain at-risk customers"
+    ],
+    "industry": "Customer Service",
+    "useCase": "Support Agent Training - Escalation Handling",
+    "successCriteria": [
+      "Customer frustration reduced from 8+ to 3 or below",
+      "Trust score increased to 7+",
+      "Churn risk changed to 'low'",
+      "Customer accepts resolution"
+    ]
+  }
 }
