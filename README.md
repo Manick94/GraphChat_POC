@@ -1,5 +1,7 @@
 # Graph-Based Corporate Conversation Trainer
 
+<img width="2816" height="1536" alt="graphChat_POC" src="https://github.com/user-attachments/assets/3f67b821-0608-4793-9712-b800d6220e4f" />
+
 A full-stack deterministic conversation training system that uses finite-state graph traversal instead of LLMs.
 
 ## Features
